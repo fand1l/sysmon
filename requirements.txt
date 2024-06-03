@@ -1,6 +1,6 @@
-pyqt6
+PySide6
 distro
 psutil
-pypiwin32
 pyuac
 py-cpuinfo
+pyqtgraph

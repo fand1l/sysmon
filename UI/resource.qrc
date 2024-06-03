@@ -1,0 +1,8 @@
+<RCC>
+  <qresource prefix="icons">
+    <file>icons/settings.png</file>
+    <file>icons/graph.png</file>
+    <file>icons/list.png</file>
+    <file>icons/workstation.png</file>
+  </qresource>
+</RCC>
