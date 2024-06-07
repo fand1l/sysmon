@@ -85,6 +85,14 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_2.addWidget(self.btn_settings)
 
+        self.btn_doc = QPushButton(self.sidebar)
+        self.btn_doc.setObjectName(u"btn_doc")
+        icon4 = QIcon()
+        icon4.addFile("icons/doc.png", QSize(), QIcon.Normal, QIcon.Off)
+        self.btn_doc.setIcon(icon4)
+
+        self.verticalLayout_2.addWidget(self.btn_doc)
+
         self.content_swidget = QStackedWidget(self.centralwidget)
         self.content_swidget.setObjectName(u"content_swidget")
         self.content_swidget.setGeometry(QRect(210, 10, 1021, 671))
@@ -138,6 +146,7 @@ class Ui_MainWindow(object):
         self.btn_sysmon.setText(QCoreApplication.translate("MainWindow", u" \u0421\u0438\u0441\u0442\u0435\u043c\u043d\u0438\u0439 \u041c\u043e\u043d\u0456\u0442\u043e\u0440", None))
         self.btn_proc.setText(QCoreApplication.translate("MainWindow", u" \u041f\u0440\u043e\u0446\u0435\u0441\u0438", None))
         self.btn_settings.setText(QCoreApplication.translate("MainWindow", u" \u041d\u0430\u043b\u0430\u0448\u0442\u0443\u0432\u0430\u043d\u043d\u044f", None))
+        self.btn_doc.setText(QCoreApplication.translate("MainWindow", u" Документація", None))
         self.btn_cpu.setText(QCoreApplication.translate("MainWindow", u"CPU", None))
         self.btn_mem.setText(QCoreApplication.translate("MainWindow", u"Memory", None))
         self.btn_swap.setText(QCoreApplication.translate("MainWindow", u"Swap", None))

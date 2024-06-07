@@ -2,7 +2,7 @@ import sys
 from PySide6.QtWidgets import (
             QApplication, QMainWindow, QWidget,
             QLabel, QVBoxLayout, QHBoxLayout, QPushButton,
-            QTableWidget, QTableWidgetItem
+            QTableWidget, QTableWidgetItem, QComboBox
             )
 from PySide6.QtCore import QFile, QThread, Signal, Qt
 from PySide6.QtGui import QFont
@@ -10,12 +10,17 @@ from UI.ui_mainwindow import Ui_MainWindow
 import pyqtgraph as pg
 import time
 from sys import path as project_path
+import json
+import os
 
 import init.os_info
 import init.proc
 import init.sysmon
 
-style_css_path = f"{project_path[0]}/style.css"
+with open("settings.json", "r") as f:
+    settings_data = json.load(f)
+
+style_css_path = f"{project_path[0]}/themes/{settings_data["theme"]}.css"
 
 
 class DataThread(QThread):
@@ -123,12 +128,14 @@ class MainWindow(QMainWindow):
         self.w_sysmon = System_Monitor(self)
         self.w_proc = Proc()
         self.w_settings = Settings()
+        self.w_doc = Document()
 
         self.ui.content_swidget.addWidget(self.w_os_ready)
         self.ui.content_swidget.addWidget(self.w_os_info)
         self.ui.content_swidget.addWidget(self.w_proc)
         self.ui.content_swidget.addWidget(self.w_sysmon)
         self.ui.content_swidget.addWidget(self.w_settings)
+        self.ui.content_swidget.addWidget(self.w_doc)
 
         self.ui.content_swidget.setCurrentWidget(self.w_os_ready)
 
@@ -137,6 +144,7 @@ class MainWindow(QMainWindow):
         self.ui.btn_sysmon.clicked.connect(lambda: self.ui.content_swidget.setCurrentWidget(self.w_sysmon))
         self.ui.btn_proc.clicked.connect(lambda: self.ui.content_swidget.setCurrentWidget(self.w_proc))
         self.ui.btn_sysinfo.clicked.connect(lambda: self.ui.content_swidget.setCurrentWidget(self.w_os_info))
+        self.ui.btn_doc.clicked.connect(lambda: self.ui.content_swidget.setCurrentWidget(self.w_doc))
 
 
 class OS_Ready(QWidget):
@@ -625,12 +633,95 @@ class Settings(QWidget):
         self.InitUI()
 
     def InitUI(self):
-        self.l_test = QLabel("Налаштування")
+        self.l_name = QLabel("Налаштування")
         self.v_layout = QVBoxLayout()
-        self.v_layout.addWidget(self.l_test, alignment=Qt.AlignmentFlag.AlignCenter)
+        self.l_restart = QLabel("Перезапустіть програму для зміни теми")
+        self.l_theme = QLabel("Тема:")
+
+        font1 = QFont()
+        font1.setPointSize(12)
+        font1.setBold(True)
+        self.l_theme.setFont(font1)
+
+        font = QFont()
+        font.setPointSize(16)
+        font.setBold(True)
+        self.l_name.setFont(font)
+
+        options_list = []
+        directory = f"{project_path[0]}/themes/"
+        entries = os.listdir(directory)
+
+        for entry in entries:
+            path = os.path.join(directory, entry)
+            if os.path.isfile(path):
+                options_list.append(f"{entry[:-4]}")
+
+        self.combo_box = QComboBox()
+        self.combo_box.addItems(options_list)
+        self.combo_box.currentTextChanged.connect(self.selected_item_check)
+
+        self.v_layout.addWidget(self.l_name, alignment=Qt.AlignmentFlag.AlignCenter)
+        self.v_layout.addStretch(1)
+        self.v_layout.addWidget(self.l_theme, alignment=Qt.AlignmentFlag.AlignCenter)
+        self.v_layout.addWidget(self.combo_box)
+        self.setLayout(self.v_layout)
+
+    def selected_item_check(self, index):
+        settings_data["theme"] = f"{index}"
+
+        with open("settings.json", "w") as f:
+            json.dump(settings_data, f, indent=4)
+
+        self.v_layout.addWidget(self.l_restart, alignment=Qt.AlignmentFlag.AlignCenter)
+        
+
+class Document(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.InitUI()
+
+    def InitUI(self):
+        font = QFont()
+        font.setPointSize(18)
+        font.setBold(True)
+
+        font1 = QFont()
+        font1.setPointSize(14)
+        font1.setBold(True)
+
+        self.l_name = QLabel("Документація")
+        self.l_name.setFont(font)
+
+        self.v_layout = QVBoxLayout()
+
+        self.l_si = QLabel("Системна інформація")
+        self.l_sm = QLabel("Системний монітор")
+        self.l_pr = QLabel("Процеси")
+        self.l_st = QLabel("Налаштування")
+
+        self.l_si.setFont(font1)
+        self.l_sm.setFont(font1)
+        self.l_pr.setFont(font1)
+        self.l_st.setFont(font1)
+
+        self.l_sii = QLabel("Відображає інформацію про апаратну та програмну частину комп'ютера")
+        self.l_smi = QLabel("Інформація про навантаженість процессора та його температуру, використання ОЗП та резервної пам'яті, а також швидкість інтернету")
+        self.l_pri = QLabel("Список назв запущених процесів та від кого вони запущні")
+        self.l_sti = QLabel("Налаштування програми")
+
+        self.v_layout.addWidget(self.l_name, alignment=Qt.AlignmentFlag.AlignCenter)
+        self.v_layout.addWidget(self.l_si, alignment=Qt.AlignmentFlag.AlignCenter)
+        self.v_layout.addWidget(self.l_sii)
+        self.v_layout.addWidget(self.l_sm, alignment=Qt.AlignmentFlag.AlignCenter)
+        self.v_layout.addWidget(self.l_smi)
+        self.v_layout.addWidget(self.l_pr, alignment=Qt.AlignmentFlag.AlignCenter)
+        self.v_layout.addWidget(self.l_pri)
+        self.v_layout.addWidget(self.l_st, alignment=Qt.AlignmentFlag.AlignCenter)
+        self.v_layout.addWidget(self.l_sti)
 
         self.setLayout(self.v_layout)
-        
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
